@@ -13,8 +13,15 @@ const initApp = async () => {
 };
 
 const handler = async (req, res) => {
-  await initApp();
-  app(req, res);
+  try {
+    await initApp();
+    app(req, res);
+  } catch (error) {
+    console.error("Server initialization failed:", error);
+    if (!res.headersSent) {
+      res.status(500).json({ message: error.message });
+    }
+  }
 };
 
 if (require.main === module) {
