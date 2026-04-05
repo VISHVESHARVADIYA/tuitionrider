@@ -135,7 +135,7 @@ function AdminDashboardPage() {
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                 <input
                   className="input-field pl-11"
-                  placeholder="Search requests..."
+                  placeholder="Search"
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                 />
