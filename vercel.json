@@ -19,8 +19,12 @@
       "dest": "server/src/server.js"
     },
     {
+      "src": "/(.*\\..*)",
+      "dest": "client/dist/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/client/dist/$1"
+      "dest": "client/dist/index.html"
     }
   ]
 }
