@@ -2,11 +2,9 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
-import { Sparkles } from "lucide-react";
 import FormCard from "../components/FormCard";
 import PageShell from "../components/PageShell";
 import Loader from "../components/Loader";
-import { getGoogleAuthUrl } from "../config/api";
 import { useAuth } from "../context/AuthContext";
 
 const initialState = { name: "", email: "", password: "" };
@@ -65,7 +63,7 @@ function AuthPage() {
         <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} className="w-full">
           <FormCard
             title={mode === "login" ? "Welcome back" : "Create your account"}
-            subtitle="Login with email or Google to save your tuition preferences."
+            subtitle="Login with email to save your tuition preferences."
           >
             <div className="mb-6 grid grid-cols-2 rounded-full bg-brand-50 p-1">
               <button
@@ -125,14 +123,6 @@ function AuthPage() {
                 {loading ? <Loader label="Processing..." /> : mode === "login" ? "Login" : "Signup"}
               </button>
             </form>
-
-            <a
-              href={getGoogleAuthUrl()}
-              className="mt-4 flex items-center justify-center gap-3 rounded-full border border-brand-100 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-brand-300 hover:bg-brand-50"
-            >
-              <Sparkles size={18} />
-              Continue with Google
-            </a>
 
             <p className="mt-5 text-center text-sm text-slate-500">
               Need admin access?{" "}

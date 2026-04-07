@@ -2,6 +2,8 @@ const express = require("express");
 const {
   getStudents,
   getTutors,
+  getMatchSuggestions,
+  createMatch,
   markContacted,
   deleteRequest,
 } = require("../controllers/adminController");
@@ -12,6 +14,8 @@ const router = express.Router();
 router.use(protect, adminOnly);
 router.get("/students", getStudents);
 router.get("/tutors", getTutors);
+router.get("/matches", getMatchSuggestions);
+router.post("/match", createMatch);
 router.patch("/student/:id/contacted", (req, res, next) => {
   req.params.type = "student";
   return markContacted(req, res, next);

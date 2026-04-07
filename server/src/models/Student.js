@@ -8,6 +8,15 @@ const studentSchema = new mongoose.Schema(
     email: { type: String, required: true, trim: true, lowercase: true },
     budget: { type: Number, required: true },
     contacted: { type: Boolean, default: false },
+    matchStatus: { type: String, enum: ["pending", "contracted"], default: "pending" },
+    matchedTutor: {
+      id: { type: String },
+      name: { type: String, trim: true },
+      email: { type: String, trim: true, lowercase: true },
+      phone: { type: String, trim: true },
+      qualification: { type: String, trim: true },
+      fees: { type: Number },
+    },
   },
   { timestamps: true }
 );

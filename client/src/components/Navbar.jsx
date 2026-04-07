@@ -2,16 +2,29 @@ import { Link, NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
-
-const navItems = [
-  { label: "Find Tutor", to: "/student-register" },
-  { label: "Become Tutor", to: "/tutor-register" },
-  { label: "Login", to: "/auth" },
-  { label: "Admin", to: "/admin/login" },
-];
+import { useAuth } from "../context/AuthContext";
 
 function Navbar() {
   const [open, setOpen] = useState(false);
+  const { isAuthenticated, isAdmin, user, logout } = useAuth();
+
+  const navItems = [
+    { label: "Find Tutor", to: "/student-register" },
+    { label: "Become Tutor", to: "/tutor-register" },
+  ];
+
+  if (isAuthenticated && !isAdmin) {
+    navItems.push({ label: "Profile", to: "/profile" });
+  }
+
+  if (!isAuthenticated) {
+    navItems.push({ label: "Login", to: "/auth" });
+    navItems.push({ label: "Admin", to: "/admin/login" });
+  }
+
+  if (isAdmin) {
+    navItems.push({ label: "Dashboard", to: "/admin/dashboard" });
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b border-white/40 bg-white/65 backdrop-blur-xl">
@@ -45,6 +58,20 @@ function Navbar() {
               {item.label}
             </NavLink>
           ))}
+          {isAuthenticated ? (
+            <div className="flex items-center gap-2">
+              <span className="rounded-full border border-brand-100 bg-brand-50 px-3 py-2 text-xs font-semibold text-brand-700">
+                Hi, {user?.name?.split(" ")[0] || "User"}
+              </span>
+              <button
+                type="button"
+                onClick={logout}
+                className="rounded-full bg-brand-700 px-4 py-2 text-sm font-semibold text-white"
+              >
+                Logout
+              </button>
+            </div>
+          ) : null}
         </div>
 
         <button
@@ -59,6 +86,11 @@ function Navbar() {
 
       {open ? (
         <div className="section-shell flex flex-col gap-2 pb-4 md:hidden">
+          {isAuthenticated ? (
+            <div className="rounded-2xl bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm">
+              Hi, {user?.name?.split(" ")[0] || "User"}
+            </div>
+          ) : null}
           {navItems.map((item) => (
             <NavLink
               key={item.to}
@@ -69,6 +101,18 @@ function Navbar() {
               {item.label}
             </NavLink>
           ))}
+          {isAuthenticated ? (
+            <button
+              type="button"
+              onClick={() => {
+                logout();
+                setOpen(false);
+              }}
+              className="rounded-2xl bg-brand-700 px-4 py-3 text-sm font-semibold text-white shadow-sm"
+            >
+              Logout
+            </button>
+          ) : null}
         </div>
       ) : null}
     </header>

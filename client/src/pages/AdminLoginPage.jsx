@@ -7,8 +7,8 @@ import Loader from "../components/Loader";
 import { useAuth } from "../context/AuthContext";
 
 function AdminLoginPage() {
-  const [email, setEmail] = useState("admin@tuitionrider.com");
-  const [password, setPassword] = useState("admin123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ function AdminLoginPage() {
       <section className="section-shell flex min-h-[calc(100vh-180px)] items-center justify-center py-10">
         <FormCard
           title="Admin Login"
-          subtitle="Use the hardcoded admin credentials to review tutor and student requests."
+          subtitle="Enter your admin email and password to access the dashboard."
         >
           <form className="space-y-4" onSubmit={onSubmit}>
             <input

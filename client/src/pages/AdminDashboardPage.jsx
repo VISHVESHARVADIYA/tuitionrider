@@ -20,7 +20,9 @@ function AdminDashboardPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [records, setRecords] = useState({ tutors: [], students: [] });
+  const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMatches, setLoadingMatches] = useState(false);
   const { logout } = useAuth();
 
   const fetchRecords = async () => {
@@ -42,8 +44,32 @@ function AdminDashboardPage() {
     }
   };
 
+  const fetchMatches = async () => {
+    try {
+      setLoadingMatches(true);
+      const response = await api.get("/admin/matches");
+      setSuggestions(response.data.suggestions || []);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Unable to load match suggestions.");
+    } finally {
+      setLoadingMatches(false);
+    }
+  };
+
+  const sendMatch = async (studentId, tutorId) => {
+    try {
+      await api.post("/admin/match", { studentId, tutorId });
+      toast.success("Match confirmed and sent to both profiles.");
+      fetchRecords();
+      fetchMatches();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Unable to send match.");
+    }
+  };
+
   useEffect(() => {
     fetchRecords();
+    fetchMatches();
   }, []);
 
   const filteredRecords = useMemo(() => {
@@ -112,7 +138,7 @@ function AdminDashboardPage() {
             </button>
           </div>
 
-          <div className="mt-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="mt-8 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="flex flex-wrap gap-3">
               {Object.entries(tabMap).map(([key, tab]) => (
                 <button
@@ -130,25 +156,64 @@ function AdminDashboardPage() {
               ))}
             </div>
 
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <label className="relative block">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                <input
-                  className="input-field pl-11"
-                  placeholder=""
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                />
-              </label>
-              <select
-                className="input-field"
-                value={statusFilter}
-                onChange={(event) => setStatusFilter(event.target.value)}
-              >
-                <option value="all">All requests</option>
-                <option value="pending">Pending</option>
-                <option value="contacted">Contacted</option>
-              </select>
+            <div className="rounded-[1.5rem] border border-brand-100 bg-slate-50 p-4 shadow-sm">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">AI Match Suggestions</p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Review the best possible student/tutor matches and confirm the strongest connections.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={fetchMatches}
+                  className="rounded-full bg-brand-700 px-4 py-2 text-xs font-semibold text-white"
+                >
+                  Refresh
+                </button>
+              </div>
+
+              <div className="mt-4 space-y-3">
+                {loadingMatches ? (
+                  <div className="py-4">
+                    <Loader label="Computing matches..." />
+                  </div>
+                ) : suggestions.length ? (
+                  suggestions.slice(0, 3).map((suggestion) => (
+                    <div
+                      key={`${suggestion.student._id}-${suggestion.tutor._id}`}
+                      className="rounded-3xl border border-brand-100 bg-white p-4"
+                    >
+                      <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
+                        <div>
+                          <p className="text-sm font-semibold text-brand-900">{suggestion.student.name}</p>
+                          <p className="text-xs text-slate-500">Student • {suggestion.student.email}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-brand-900">{suggestion.tutor.name}</p>
+                          <p className="text-xs text-slate-500">Tutor • {suggestion.tutor.email}</p>
+                        </div>
+                        <span className="rounded-full bg-brand-50 px-3 py-2 text-xs font-semibold text-brand-700">
+                          Score {suggestion.score}%
+                        </span>
+                      </div>
+                      <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                        <p className="text-xs text-slate-500">Budget: Rs. {suggestion.student.budget}</p>
+                        <p className="text-xs text-slate-500">Fees: Rs. {suggestion.tutor.fees}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => sendMatch(suggestion.student._id, suggestion.tutor._id)}
+                        className="mt-4 rounded-full bg-brand-700 px-4 py-2 text-sm font-semibold text-white"
+                      >
+                        Confirm match
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-slate-500">No match suggestions are available right now.</p>
+                )}
+              </div>
             </div>
           </div>
 
