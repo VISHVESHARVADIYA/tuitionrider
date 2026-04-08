@@ -13,6 +13,7 @@ router.post(
     body("parentContact").notEmpty().withMessage("Parent contact is required."),
     body("email").isEmail().withMessage("Valid email is required."),
     body("budget").isNumeric().withMessage("Budget must be numeric."),
+    body("subjects").isArray({ min: 1 }).withMessage("At least one subject is required."),
   ],
   handleValidation,
   registerStudent

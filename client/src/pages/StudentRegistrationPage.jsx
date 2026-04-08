@@ -12,6 +12,7 @@ const initialState = {
   parentContact: "",
   email: "",
   budget: "",
+  subjects: "",
 };
 
 function StudentRegistrationPage() {
@@ -40,6 +41,7 @@ function StudentRegistrationPage() {
         parentContact: formData.parentContact,
         email: formData.email,
         budget: Number(formData.budget),
+        subjects: formData.subjects.split(",").map(s => s.trim()).filter(s => s),
       });
       toast.success("Your tutor request has been submitted.");
       setFormData(initialState);
@@ -93,6 +95,13 @@ function StudentRegistrationPage() {
                 value={formData.email}
                 onChange={onChange}
                 placeholder="Email address"
+              />
+              <input
+                className="input-field"
+                name="subjects"
+                value={formData.subjects}
+                onChange={onChange}
+                placeholder="Subjects (comma separated, e.g., Mathematics, Physics)"
               />
               <input
                 type="number"
