@@ -14,8 +14,8 @@ const updateStudent = async (req, res) => {
   const { id } = req.params;
   const updates = req.body;
 
-  // Allow updating: name, class, parentContact, email, budget, subjects
-  const allowedFields = ["name", "class", "parentContact", "email", "budget", "subjects"];
+  // Allow updating: name, class, parentContact, email, budget, subjects, timeSlot
+  const allowedFields = ["name", "class", "parentContact", "email", "budget", "subjects", "timeSlot"];
   const filteredUpdates = Object.keys(updates)
     .filter((key) => allowedFields.includes(key))
     .reduce((obj, key) => {

@@ -7,6 +7,7 @@ const studentSchema = new mongoose.Schema(
     parentContact: { type: String, required: true, trim: true },
     email: { type: String, required: true, trim: true, lowercase: true },
     budget: { type: Number, required: true },
+    timeSlot: { type: String, required: true, trim: true },
     subjects: [{ type: String, required: true, trim: true }],
     contacted: { type: Boolean, default: false },
     matchStatus: { type: String, enum: ["pending", "contracted"], default: "pending" },
@@ -17,6 +18,7 @@ const studentSchema = new mongoose.Schema(
       phone: { type: String, trim: true },
       qualification: { type: String, trim: true },
       fees: { type: Number },
+      timeSlot: { type: String, trim: true },
     },
   },
   { timestamps: true }

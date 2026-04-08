@@ -155,6 +155,28 @@ function ProfilePage() {
                                 />
                               </div>
                             </div>
+                            <div className="grid gap-4 sm:grid-cols-2">
+                              <div>
+                                <label className="block text-sm font-semibold text-slate-700">Subjects</label>
+                                <input
+                                  type="text"
+                                  value={formatSubjects(editData.subjects) || ""}
+                                  onChange={(e) => setEditData({ ...editData, subjects: e.target.value })}
+                                  className="input-field mt-2 w-full"
+                                  placeholder="Math, Science, English"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-semibold text-slate-700">Time Slot</label>
+                                <input
+                                  type="text"
+                                  value={editData.timeSlot || ""}
+                                  onChange={(e) => setEditData({ ...editData, timeSlot: e.target.value })}
+                                  className="input-field mt-2 w-full"
+                                  placeholder="10:00 AM - 12:00 PM"
+                                />
+                              </div>
+                            </div>
                             <div>
                               <label className="block text-sm font-semibold text-slate-700">Email</label>
                               <input
@@ -212,8 +234,14 @@ function ProfilePage() {
                               <span className="font-semibold">Budget:</span> Rs. {request.budget}/hr
                             </p>
                             <p className="text-sm text-slate-600">
+                              <span className="font-semibold">Time slot:</span> {request.timeSlot}
+                            </p>
+                            <p className="text-sm text-slate-600">
                               <span className="font-semibold">Parent:</span> {request.parentContact}
                             </p>
+                          </div>
+                          <div className="mt-3 rounded-xl bg-slate-50 p-3 text-sm text-slate-700">
+                            <span className="font-semibold">Subjects:</span> {request.subjects.join(", ")}
                           </div>
                           {request.matchStatus === "contracted" && request.matchedTutor ? (
                             <div className="mt-4 rounded-xl border-2 border-green-200 bg-green-50 p-4">
@@ -222,6 +250,7 @@ function ProfilePage() {
                               <p className="text-sm text-green-700">Email: {request.matchedTutor.email}</p>
                               <p className="text-sm text-green-700">Phone: {request.matchedTutor.phone}</p>
                               <p className="text-sm text-green-700">Qualification: {request.matchedTutor.qualification}</p>
+                              <p className="text-sm text-green-700">Time slot: {request.matchedTutor.timeSlot}</p>
                             </div>
                           ) : null}
                         </div>
@@ -281,6 +310,28 @@ function ProfilePage() {
                                   value={editData.phone || ""}
                                   onChange={(e) => setEditData({ ...editData, phone: e.target.value })}
                                   className="input-field mt-2 w-full"
+                                />
+                              </div>
+                            </div>
+                            <div className="grid gap-4 sm:grid-cols-2">
+                              <div>
+                                <label className="block text-sm font-semibold text-slate-700">Time Slot</label>
+                                <input
+                                  type="text"
+                                  value={editData.timeSlot || ""}
+                                  onChange={(e) => setEditData({ ...editData, timeSlot: e.target.value })}
+                                  className="input-field mt-2 w-full"
+                                  placeholder="10:00 AM - 12:00 PM"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-semibold text-slate-700">Subjects</label>
+                                <input
+                                  type="text"
+                                  value={formatSubjects(editData.subjects) || ""}
+                                  onChange={(e) => setEditData({ ...editData, subjects: e.target.value })}
+                                  className="input-field mt-2 w-full"
+                                  placeholder="Math, Science, English"
                                 />
                               </div>
                             </div>
@@ -353,19 +404,28 @@ function ProfilePage() {
                               <span className="font-semibold">Fees:</span> Rs. {request.fees}/hr
                             </p>
                             <p className="text-sm text-slate-600">
-                              <span className="font-semibold">Subjects:</span> {request.subjects.join(", ")}
+                              <span className="font-semibold">Time slot:</span> {request.timeSlot}
                             </p>
                             <p className="text-sm text-slate-600">
                               <span className="font-semibold">Phone:</span> {request.phone}
                             </p>
                           </div>
-                          {request.matchStatus === "contracted" && request.matchedStudent ? (
-                            <div className="mt-4 rounded-xl border-2 border-green-200 bg-green-50 p-4">
-                              <p className="text-sm font-bold text-green-900">✓ Matched Student</p>
-                              <p className="text-sm font-semibold text-green-800 mt-2">{request.matchedStudent.name}</p>
-                              <p className="text-sm text-green-700">Email: {request.matchedStudent.email}</p>
-                              <p className="text-sm text-green-700">Contact: {request.matchedStudent.parentContact}</p>
-                              <p className="text-sm text-green-700">Class: {request.matchedStudent.class}</p>
+                          <div className="mt-3 rounded-xl bg-slate-50 p-3 text-sm text-slate-700">
+                            <span className="font-semibold">Subjects:</span> {request.subjects.join(", ")}
+                          </div>
+                          {request.matchedStudents?.length ? (
+                            <div className="mt-4 rounded-xl border-2 border-green-200 bg-green-50 p-4 space-y-4">
+                              <p className="text-sm font-bold text-green-900">✓ Matched Students</p>
+                              {request.matchedStudents.map((student) => (
+                                <div key={student.id} className="rounded-2xl border border-green-100 bg-white p-3">
+                                  <p className="text-sm font-semibold text-green-800">{student.name}</p>
+                                  <p className="text-sm text-green-700">Email: {student.email}</p>
+                                  <p className="text-sm text-green-700">Contact: {student.parentContact}</p>
+                                  <p className="text-sm text-green-700">Class: {student.class}</p>
+                                  <p className="text-sm text-green-700">Time slot: {student.timeSlot}</p>
+                                  <p className="text-sm text-green-700">Subjects: {student.subjects?.join(", ")}</p>
+                                </div>
+                              ))}
                             </div>
                           ) : null}
                         </div>

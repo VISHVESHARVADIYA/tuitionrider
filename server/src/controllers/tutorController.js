@@ -14,8 +14,8 @@ const updateTutor = async (req, res) => {
   const { id } = req.params;
   const updates = req.body;
 
-  // Allow updating: name, qualification, subjects, email, phone, fees
-  const allowedFields = ["name", "qualification", "subjects", "email", "phone", "fees"];
+  // Allow updating: name, qualification, subjects, email, phone, fees, timeSlot
+  const allowedFields = ["name", "qualification", "subjects", "email", "phone", "fees", "timeSlot"];
   const filteredUpdates = Object.keys(updates)
     .filter((key) => allowedFields.includes(key))
     .reduce((obj, key) => {

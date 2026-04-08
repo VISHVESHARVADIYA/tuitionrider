@@ -14,6 +14,7 @@ router.post(
     body("email").isEmail().withMessage("Valid email is required."),
     body("phone").notEmpty().withMessage("Phone number is required."),
     body("fees").isNumeric().withMessage("Fees must be numeric."),
+    body("timeSlot").notEmpty().withMessage("Time slot is required."),
   ],
   handleValidation,
   registerTutor
@@ -31,6 +32,7 @@ router.patch(
     body("email").optional().isEmail().withMessage("Valid email is required."),
     body("phone").optional().notEmpty().withMessage("Phone cannot be empty."),
     body("fees").optional().isNumeric().withMessage("Fees must be numeric."),
+    body("timeSlot").optional().notEmpty().withMessage("Time slot cannot be empty."),
   ],
   handleValidation,
   updateTutor

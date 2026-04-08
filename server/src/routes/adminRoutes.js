@@ -4,6 +4,8 @@ const {
   getTutors,
   getMatchSuggestions,
   createMatch,
+  getContractedMatches,
+  cancelContract,
   markContacted,
   deleteRequest,
 } = require("../controllers/adminController");
@@ -15,6 +17,7 @@ router.use(protect, adminOnly);
 router.get("/students", getStudents);
 router.get("/tutors", getTutors);
 router.get("/matches", getMatchSuggestions);
+router.get("/contracted", getContractedMatches);
 router.post("/match", createMatch);
 router.patch("/student/:id/contacted", (req, res, next) => {
   req.params.type = "student";
@@ -23,6 +26,14 @@ router.patch("/student/:id/contacted", (req, res, next) => {
 router.patch("/tutor/:id/contacted", (req, res, next) => {
   req.params.type = "tutor";
   return markContacted(req, res, next);
+});
+router.patch("/student/:id/cancel", (req, res, next) => {
+  req.params.type = "student";
+  return cancelContract(req, res, next);
+});
+router.patch("/tutor/:id/cancel", (req, res, next) => {
+  req.params.type = "tutor";
+  return cancelContract(req, res, next);
 });
 router.delete("/student/:id", (req, res, next) => {
   req.params.type = "student";

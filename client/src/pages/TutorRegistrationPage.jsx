@@ -13,6 +13,7 @@ const initialState = {
   email: "",
   phone: "",
   fees: "",
+  timeSlot: "",
 };
 
 function TutorRegistrationPage() {
@@ -88,6 +89,13 @@ function TutorRegistrationPage() {
                 value={formData.subjects}
                 onChange={onChange}
                 placeholder="Subjects (comma separated)"
+              />
+              <input
+                className="input-field"
+                name="timeSlot"
+                value={formData.timeSlot}
+                onChange={onChange}
+                placeholder="Time slot (e.g. 10:00 AM - 12:00 PM)"
               />
               <input
                 type="email"

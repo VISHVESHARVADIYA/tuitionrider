@@ -13,6 +13,7 @@ const initialState = {
   email: "",
   budget: "",
   subjects: "",
+  timeSlot: "",
 };
 
 function StudentRegistrationPage() {
@@ -41,6 +42,7 @@ function StudentRegistrationPage() {
         parentContact: formData.parentContact,
         email: formData.email,
         budget: Number(formData.budget),
+        timeSlot: formData.timeSlot,
         subjects: formData.subjects.split(",").map(s => s.trim()).filter(s => s),
       });
       toast.success("Your tutor request has been submitted.");
@@ -102,6 +104,13 @@ function StudentRegistrationPage() {
                 value={formData.subjects}
                 onChange={onChange}
                 placeholder="Subjects (comma separated, e.g., Mathematics, Physics)"
+              />
+              <input
+                className="input-field"
+                name="timeSlot"
+                value={formData.timeSlot}
+                onChange={onChange}
+                placeholder="Time slot (e.g. 10:00 AM - 12:00 PM)"
               />
               <input
                 type="number"
