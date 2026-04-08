@@ -6,6 +6,15 @@ import PageShell from "../components/PageShell";
 import Loader from "../components/Loader";
 import { api } from "../config/api";
 
+const timeOptions = Array.from({ length: 33 }, (_, index) => {
+  const totalMinutes = 6 * 60 + index * 30;
+  const hours24 = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  const suffix = hours24 >= 12 ? "PM" : "AM";
+  const displayHour = hours24 % 12 || 12;
+  return `${displayHour.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")} ${suffix}`;
+});
+
 const initialState = {
   name: "",
   studentClass: "",
@@ -13,7 +22,8 @@ const initialState = {
   email: "",
   budget: "",
   subjects: "",
-  timeSlot: "",
+  timeStart: "",
+  timeEnd: "",
 };
 
 function StudentRegistrationPage() {
@@ -42,7 +52,7 @@ function StudentRegistrationPage() {
         parentContact: formData.parentContact,
         email: formData.email,
         budget: Number(formData.budget),
-        timeSlot: formData.timeSlot,
+        timeSlot: `${formData.timeStart} - ${formData.timeEnd}`,
         subjects: formData.subjects.split(",").map(s => s.trim()).filter(s => s),
       });
       toast.success("Your tutor request has been submitted.");
@@ -105,13 +115,30 @@ function StudentRegistrationPage() {
                 onChange={onChange}
                 placeholder="Subjects (comma separated, e.g., Mathematics, Physics)"
               />
-              <input
-                className="input-field"
-                name="timeSlot"
-                value={formData.timeSlot}
-                onChange={onChange}
-                placeholder="Time slot (e.g. 10:00 AM - 12:00 PM)"
-              />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <select
+                  className="input-field"
+                  name="timeStart"
+                  value={formData.timeStart}
+                  onChange={onChange}
+                >
+                  <option value="">Start time</option>
+                  {timeOptions.map((time) => (
+                    <option key={`start-${time}`} value={time}>{time}</option>
+                  ))}
+                </select>
+                <select
+                  className="input-field"
+                  name="timeEnd"
+                  value={formData.timeEnd}
+                  onChange={onChange}
+                >
+                  <option value="">End time</option>
+                  {timeOptions.map((time) => (
+                    <option key={`end-${time}`} value={time}>{time}</option>
+                  ))}
+                </select>
+              </div>
               <input
                 type="number"
                 className="input-field"

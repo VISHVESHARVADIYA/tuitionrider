@@ -23,11 +23,16 @@ const getMatchSuggestions = async (_req, res) => {
         const studentSubjects = (student.subjects || []).map((subject) => subject.toLowerCase().trim());
         const tutorSubjects = (tutor.subjects || []).map((subject) => subject.toLowerCase().trim());
         const commonSubjects = studentSubjects.filter((subject) => tutorSubjects.includes(subject));
+        const studentSlot = student.timeSlot?.toLowerCase().trim();
+        const tutorSlot = tutor.timeSlot?.toLowerCase().trim();
 
-        if (commonSubjects.length) {
-          const budgetScore = Math.max(0, 100 - Math.abs(student.budget - tutor.fees) / Math.max(student.budget, 1) * 100);
-          const timeSlotBonus = student.timeSlot && tutor.timeSlot && student.timeSlot.toLowerCase().trim() === tutor.timeSlot.toLowerCase().trim() ? 10 : 0;
-          const score = Math.min(100, Math.round(budgetScore + timeSlotBonus));
+        if (commonSubjects.length && studentSlot && tutorSlot && studentSlot === tutorSlot) {
+          const score = Math.min(
+            100,
+            Math.round(
+              Math.max(0, 100 - Math.abs(student.budget - tutor.fees) / Math.max(student.budget, 1) * 100) + 10
+            )
+          );
 
           suggestions.push({
             student,

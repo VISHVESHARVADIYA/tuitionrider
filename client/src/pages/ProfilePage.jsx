@@ -59,6 +59,21 @@ function ProfilePage() {
     return subjects;
   };
 
+  const parseTimeSlot = (slot) => {
+    if (!slot) return ["", ""];
+    const [start, end] = slot.split(" - ").map((part) => part.trim());
+    return [start || "", end || ""];
+  };
+
+  const timeOptions = Array.from({ length: 33 }, (_, index) => {
+    const totalMinutes = 6 * 60 + index * 30;
+    const hours24 = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    const suffix = hours24 >= 12 ? "PM" : "AM";
+    const displayHour = hours24 % 12 || 12;
+    return `${displayHour.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")} ${suffix}`;
+  });
+
   const saveEdit = async () => {
     try {
       setSaving(true);
@@ -316,13 +331,34 @@ function ProfilePage() {
                             <div className="grid gap-4 sm:grid-cols-2">
                               <div>
                                 <label className="block text-sm font-semibold text-slate-700">Time Slot</label>
-                                <input
-                                  type="text"
-                                  value={editData.timeSlot || ""}
-                                  onChange={(e) => setEditData({ ...editData, timeSlot: e.target.value })}
-                                  className="input-field mt-2 w-full"
-                                  placeholder="10:00 AM - 12:00 PM"
-                                />
+                                <div className="grid gap-4 sm:grid-cols-2">
+                                  <select
+                                    className="input-field mt-2 w-full"
+                                    value={parseTimeSlot(editData.timeSlot)[0]}
+                                    onChange={(e) => {
+                                      const [, end] = parseTimeSlot(editData.timeSlot);
+                                      setEditData({ ...editData, timeSlot: `${e.target.value} - ${end}`.trim() });
+                                    }}
+                                  >
+                                    <option value="">Start time</option>
+                                    {timeOptions.map((time) => (
+                                      <option key={`student-start-${time}`} value={time}>{time}</option>
+                                    ))}
+                                  </select>
+                                  <select
+                                    className="input-field mt-2 w-full"
+                                    value={parseTimeSlot(editData.timeSlot)[1]}
+                                    onChange={(e) => {
+                                      const [start] = parseTimeSlot(editData.timeSlot);
+                                      setEditData({ ...editData, timeSlot: `${start} - ${e.target.value}`.trim() });
+                                    }}
+                                  >
+                                    <option value="">End time</option>
+                                    {timeOptions.map((time) => (
+                                      <option key={`student-end-${time}`} value={time}>{time}</option>
+                                    ))}
+                                  </select>
+                                </div>
                               </div>
                               <div>
                                 <label className="block text-sm font-semibold text-slate-700">Subjects</label>
