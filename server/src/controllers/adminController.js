@@ -72,18 +72,39 @@ const getMatchSuggestions = async (_req, res) => {
   const tutors = await Tutor.find().sort({ createdAt: -1 });
 
   const suggestions = [];
+  const diagnostics = {
+    consideredPairs: 0,
+    matchedPairs: 0,
+    budgetRejected: 0,
+    subjectRejected: 0,
+    slotRejected: 0,
+    conflictRejected: 0,
+  };
 
   students.forEach((student) => {
     tutors.forEach((tutor) => {
-      if (tutor.fees > student.budget) return;
+      diagnostics.consideredPairs += 1;
+      if (tutor.fees > student.budget) {
+        diagnostics.budgetRejected += 1;
+        return;
+      }
 
       const studentSubjects = (student.subjects || []).map((subject) => subject.toLowerCase().trim());
       const tutorSubjects = (tutor.subjects || []).map((subject) => subject.toLowerCase().trim());
       const commonSubjects = studentSubjects.filter((subject) => tutorSubjects.includes(subject));
 
-      if (!commonSubjects.length) return;
-      if (!hasSlotOverlap(student.timeSlot, tutor.timeSlot)) return;
-      if (!isTutorAvailableForSlot(tutor, student.timeSlot, student._id.toString())) return;
+      if (!commonSubjects.length) {
+        diagnostics.subjectRejected += 1;
+        return;
+      }
+      if (!hasSlotOverlap(student.timeSlot, tutor.timeSlot)) {
+        diagnostics.slotRejected += 1;
+        return;
+      }
+      if (!isTutorAvailableForSlot(tutor, student.timeSlot, student._id.toString())) {
+        diagnostics.conflictRejected += 1;
+        return;
+      }
 
       const budgetScore = Math.max(
         0,
@@ -91,6 +112,7 @@ const getMatchSuggestions = async (_req, res) => {
       );
       const subjectScore = Math.min(30, (commonSubjects.length / Math.max(studentSubjects.length, 1)) * 30);
       const score = Math.min(100, Math.round(budgetScore * 0.6 + subjectScore + 10));
+      diagnostics.matchedPairs += 1;
 
       suggestions.push({
         student,
@@ -103,7 +125,7 @@ const getMatchSuggestions = async (_req, res) => {
 
   suggestions.sort((a, b) => b.score - a.score);
 
-  return res.json({ suggestions: suggestions.slice(0, 20) });
+  return res.json({ suggestions: suggestions.slice(0, 20), diagnostics });
 };
 
 const createMatch = async (req, res) => {

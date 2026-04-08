@@ -23,6 +23,7 @@ function AdminDashboardPage() {
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingMatches, setLoadingMatches] = useState(false);
+  const [matchDiagnostics, setMatchDiagnostics] = useState(null);
   const [contractedMatches, setContractedMatches] = useState([]);
   const [showContracted, setShowContracted] = useState(false);
   const { logout } = useAuth();
@@ -51,6 +52,7 @@ function AdminDashboardPage() {
       setLoadingMatches(true);
       const response = await api.get("/admin/matches");
       setSuggestions(response.data.suggestions || []);
+      setMatchDiagnostics(response.data.diagnostics || null);
     } catch (error) {
       toast.error(error.response?.data?.message || "Unable to load match suggestions.");
     } finally {
@@ -251,6 +253,29 @@ function AdminDashboardPage() {
               </div>
 
               <div className="space-y-4 mt-4">
+                {matchDiagnostics ? (
+                  <div className="flex flex-wrap gap-2 text-xs">
+                    <span className="rounded-full bg-slate-200 px-3 py-1 font-semibold text-slate-700">
+                      Considered: {matchDiagnostics.consideredPairs}
+                    </span>
+                    <span className="rounded-full bg-emerald-100 px-3 py-1 font-semibold text-emerald-700">
+                      Matched: {matchDiagnostics.matchedPairs}
+                    </span>
+                    <span className="rounded-full bg-amber-100 px-3 py-1 font-semibold text-amber-700">
+                      Budget filtered: {matchDiagnostics.budgetRejected}
+                    </span>
+                    <span className="rounded-full bg-rose-100 px-3 py-1 font-semibold text-rose-700">
+                      Subject filtered: {matchDiagnostics.subjectRejected}
+                    </span>
+                    <span className="rounded-full bg-indigo-100 px-3 py-1 font-semibold text-indigo-700">
+                      Slot filtered: {matchDiagnostics.slotRejected}
+                    </span>
+                    <span className="rounded-full bg-orange-100 px-3 py-1 font-semibold text-orange-700">
+                      Conflict filtered: {matchDiagnostics.conflictRejected}
+                    </span>
+                  </div>
+                ) : null}
+
                 {loadingMatches ? (
                   <div className="py-4">
                     <Loader label="Computing matches..." />
@@ -279,6 +304,12 @@ function AdminDashboardPage() {
                         <div className="rounded-lg bg-slate-100 p-3 text-xs text-slate-700">
                           <p className="font-semibold">✓ Matched subjects: {suggestion.subjects.join(", ")}</p>
                           <p className="mt-1 text-slate-600">Qualification: {suggestion.tutor.qualification}</p>
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            <span className="rounded-full bg-emerald-100 px-2 py-1 font-semibold text-emerald-700">Budget ✓</span>
+                            <span className="rounded-full bg-emerald-100 px-2 py-1 font-semibold text-emerald-700">Subject ✓</span>
+                            <span className="rounded-full bg-emerald-100 px-2 py-1 font-semibold text-emerald-700">Slot ✓</span>
+                            <span className="rounded-full bg-emerald-100 px-2 py-1 font-semibold text-emerald-700">No Conflict ✓</span>
+                          </div>
                         </div>
                         <div className="flex items-center justify-between gap-3">
                           <span className="rounded-full bg-gradient-to-r from-brand-600 to-brand-700 px-4 py-2 text-xs font-bold text-white">
