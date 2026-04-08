@@ -10,4 +10,26 @@ const getAllTutors = async (_req, res) => {
   return res.json({ requests });
 };
 
-module.exports = { registerTutor, getAllTutors };
+const updateTutor = async (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
+
+  // Allow updating: name, qualification, subjects, email, phone, fees
+  const allowedFields = ["name", "qualification", "subjects", "email", "phone", "fees"];
+  const filteredUpdates = Object.keys(updates)
+    .filter((key) => allowedFields.includes(key))
+    .reduce((obj, key) => {
+      obj[key] = updates[key];
+      return obj;
+    }, {});
+
+  const request = await Tutor.findByIdAndUpdate(id, filteredUpdates, { new: true, runValidators: true });
+
+  if (!request) {
+    return res.status(404).json({ message: "Tutor request not found." });
+  }
+
+  return res.json({ message: "Tutor request updated successfully.", request });
+};
+
+module.exports = { registerTutor, getAllTutors, updateTutor };

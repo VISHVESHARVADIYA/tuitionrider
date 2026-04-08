@@ -1,6 +1,6 @@
 const express = require("express");
-const { body } = require("express-validator");
-const { registerTutor, getAllTutors } = require("../controllers/tutorController");
+const { body, param } = require("express-validator");
+const { registerTutor, getAllTutors, updateTutor } = require("../controllers/tutorController");
 const handleValidation = require("../middleware/validationMiddleware");
 
 const router = express.Router();
@@ -20,5 +20,20 @@ router.post(
 );
 
 router.get("/all", getAllTutors);
+
+router.patch(
+  "/:id",
+  [
+    param("id").isMongoId().withMessage("Invalid tutor ID."),
+    body("name").optional().notEmpty().withMessage("Name cannot be empty."),
+    body("qualification").optional().notEmpty().withMessage("Qualification cannot be empty."),
+    body("subjects").optional().isArray({ min: 1 }).withMessage("At least one subject is required."),
+    body("email").optional().isEmail().withMessage("Valid email is required."),
+    body("phone").optional().notEmpty().withMessage("Phone cannot be empty."),
+    body("fees").optional().isNumeric().withMessage("Fees must be numeric."),
+  ],
+  handleValidation,
+  updateTutor
+);
 
 module.exports = router;

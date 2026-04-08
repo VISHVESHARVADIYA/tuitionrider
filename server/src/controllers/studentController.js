@@ -10,4 +10,26 @@ const getAllStudents = async (_req, res) => {
   return res.json({ requests });
 };
 
-module.exports = { registerStudent, getAllStudents };
+const updateStudent = async (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
+
+  // Allow updating: name, class, parentContact, email, budget, subjects
+  const allowedFields = ["name", "class", "parentContact", "email", "budget", "subjects"];
+  const filteredUpdates = Object.keys(updates)
+    .filter((key) => allowedFields.includes(key))
+    .reduce((obj, key) => {
+      obj[key] = updates[key];
+      return obj;
+    }, {});
+
+  const request = await Student.findByIdAndUpdate(id, filteredUpdates, { new: true, runValidators: true });
+
+  if (!request) {
+    return res.status(404).json({ message: "Student request not found." });
+  }
+
+  return res.json({ message: "Student request updated successfully.", request });
+};
+
+module.exports = { registerStudent, getAllStudents, updateStudent };
