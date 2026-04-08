@@ -8,7 +8,7 @@ function Navbar() {
   const [open, setOpen] = useState(false);
   const { isAuthenticated, isAdmin, user, logout } = useAuth();
   const location = useLocation();
-  const isLandingPage = location.pathname === "/";
+  const hideAdminLink = location.pathname === "/" || location.pathname === "/auth";
 
   const navItems = [
     { label: "Find Tutor", to: "/student-register" },
@@ -21,7 +21,7 @@ function Navbar() {
 
   if (!isAuthenticated) {
     navItems.push({ label: "Login", to: "/auth" });
-    if (!isLandingPage) {
+    if (!hideAdminLink) {
       navItems.push({ label: "Admin", to: "/admin/login" });
     }
   }
