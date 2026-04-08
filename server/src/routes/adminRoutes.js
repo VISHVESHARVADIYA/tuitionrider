@@ -8,6 +8,7 @@ const {
   cancelContract,
   markContacted,
   deleteRequest,
+  clearPendingContracted,
 } = require("../controllers/adminController");
 const { protect, adminOnly } = require("../middleware/authMiddleware");
 
@@ -43,5 +44,7 @@ router.delete("/tutor/:id", (req, res, next) => {
   req.params.type = "tutor";
   return deleteRequest(req, res, next);
 });
+
+router.delete("/clear-pending-contracted", clearPendingContracted);
 
 module.exports = router;

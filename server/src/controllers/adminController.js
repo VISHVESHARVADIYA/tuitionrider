@@ -196,4 +196,29 @@ const deleteRequest = async (req, res) => {
   return res.json({ message: "Request deleted successfully." });
 };
 
-module.exports = { getStudents, getTutors, getMatchSuggestions, createMatch, markContacted, deleteRequest };
+const clearPendingContracted = async (_req, res) => {
+  try {
+    const studentResult = await Student.deleteMany({ matchStatus: { $in: ["pending", "contracted"] } });
+    const tutorResult = await Tutor.deleteMany({ matchStatus: { $in: ["pending", "contracted"] } });
+
+    return res.json({
+      message: "Pending and contracted entries cleared.",
+      deletedStudents: studentResult.deletedCount,
+      deletedTutors: tutorResult.deletedCount,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Error clearing entries.", error: error.message });
+  }
+};
+
+module.exports = {
+  getStudents,
+  getTutors,
+  getMatchSuggestions,
+  createMatch,
+  getContractedMatches,
+  cancelContract,
+  markContacted,
+  deleteRequest,
+  clearPendingContracted,
+};
