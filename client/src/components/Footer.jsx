@@ -1,4 +1,4 @@
-import { Globe2, Mail, PhoneCall, Send } from "lucide-react";
+import { Instagram, Mail, PhoneCall } from "lucide-react";
 
 function Footer() {
   return (
@@ -22,11 +22,14 @@ function Footer() {
             hello@tuitionrider.com
           </p>
           <div className="flex items-center gap-3 pt-1">
-            <a href="https://facebook.com" className="rounded-full bg-brand-50 p-2 text-brand-700">
-              <Globe2 size={16} />
-            </a>
-            <a href="https://instagram.com" className="rounded-full bg-brand-50 p-2 text-brand-700">
-              <Send size={16} />
+            <a
+              href="https://www.instagram.com/tuitionrider/"
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full bg-brand-50 p-2 text-brand-700"
+              aria-label="TuitionRider Instagram"
+            >
+              <Instagram size={16} />
             </a>
           </div>
         </div>

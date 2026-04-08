@@ -124,12 +124,6 @@ function AuthPage() {
               </button>
             </form>
 
-            <p className="mt-5 text-center text-sm text-slate-500">
-              Need admin access?{" "}
-              <Link className="font-semibold text-brand-700" to="/admin/login">
-                Admin login
-              </Link>
-            </p>
           </FormCard>
         </motion.div>
       </section>
