@@ -160,13 +160,13 @@ function AdminDashboardPage() {
 
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                   <div className="relative w-full sm:w-[280px]">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                     <input
                       type="search"
                       value={search}
                       onChange={(event) => setSearch(event.target.value)}
                       placeholder="Search requests"
-                      className="input-field w-full pl-12"
+                      className="input-field w-full pl-14"
                     />
                   </div>
                   <select
@@ -333,92 +333,6 @@ function AdminDashboardPage() {
                 )}
               </div>
             </aside>
-          </div>
-
-          <div className="rounded-[2rem] border border-brand-100 bg-white p-6 shadow-sm">
-            {loading ? (
-              <div className="p-6">
-                <Loader label="Loading dashboard data..." />
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-full text-left text-sm">
-                  <thead className="bg-brand-50 text-brand-800">
-                    <tr>
-                      <th className="px-5 py-4 font-semibold">Name</th>
-                      <th className="px-5 py-4 font-semibold">Contact</th>
-                      <th className="px-5 py-4 font-semibold">Details</th>
-                      <th className="px-5 py-4 font-semibold">Status</th>
-                      <th className="px-5 py-4 font-semibold">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredRecords.length ? (
-                      filteredRecords.map((record) => (
-                        <tr key={record._id} className="border-t border-slate-100 align-top">
-                          <td className="px-5 py-4 font-semibold text-slate-800">{record.name}</td>
-                          <td className="px-5 py-4 text-slate-600">
-                            <p>{record.email}</p>
-                            <p>{record.phone || record.parentContact}</p>
-                          </td>
-                          <td className="px-5 py-4 text-slate-600">
-                            {activeTab === "tutors" ? (
-                              <>
-                                <p>Qualification: {record.qualification}</p>
-                                <p>Subjects: {record.subjects.join(", ")}</p>
-                                <p>Fees: Rs. {record.fees}/hr</p>
-                              </>
-                            ) : (
-                              <>
-                                <p>Class: {record.class}</p>
-                                <p>Budget: Rs. {record.budget}/hr</p>
-                              </>
-                            )}
-                          </td>
-                          <td className="px-5 py-4">
-                            <span
-                              className={`rounded-full px-3 py-2 text-xs font-semibold ${
-                                record.contacted
-                                  ? "bg-mint text-emerald-700"
-                                  : "bg-amber-50 text-amber-700"
-                              }`}
-                            >
-                              {record.contacted ? "Contacted" : "Pending"}
-                            </span>
-                          </td>
-                          <td className="px-5 py-4">
-                            <div className="flex flex-wrap gap-2">
-                              <button
-                                type="button"
-                                onClick={() => markContacted(activeTab.slice(0, -1), record._id)}
-                                className="rounded-full bg-brand-50 px-4 py-2 text-xs font-semibold text-brand-700"
-                              >
-                                <CheckCircle2 size={14} className="mr-1 inline-block" />
-                                Mark contacted
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => deleteRecord(activeTab.slice(0, -1), record._id)}
-                                className="rounded-full bg-rose-50 px-4 py-2 text-xs font-semibold text-rose-700"
-                              >
-                                <Trash2 size={14} className="mr-1 inline-block" />
-                                Delete
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="5" className="px-5 py-8 text-center text-slate-500">
-                          No matching requests found.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            )}
           </div>
         </div>
       </section>
