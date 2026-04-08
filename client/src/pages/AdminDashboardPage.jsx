@@ -159,14 +159,14 @@ function AdminDashboardPage() {
                 </div>
 
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <div className="relative w-full sm:w-[260px]">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                  <div className="relative w-full sm:w-[280px]">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                     <input
                       type="search"
                       value={search}
                       onChange={(event) => setSearch(event.target.value)}
                       placeholder="Search requests"
-                      className="input-field w-full pl-11"
+                      className="input-field w-full pl-12"
                     />
                   </div>
                   <select
@@ -296,29 +296,35 @@ function AdminDashboardPage() {
                       key={`${suggestion.student._id}-${suggestion.tutor._id}`}
                       className="rounded-3xl border border-brand-100 bg-white p-4"
                     >
-                      <div className="grid gap-2 sm:grid-cols-2">
-                        <div>
-                          <p className="text-sm font-semibold text-brand-900">{suggestion.student.name}</p>
-                          <p className="text-xs text-slate-500">Student</p>
-                          <p className="text-xs text-slate-500">Budget: Rs. {suggestion.student.budget}</p>
+                      <div className="flex flex-col gap-3">
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                          <div>
+                            <p className="text-sm font-semibold text-brand-900">{suggestion.student.name}</p>
+                            <p className="text-xs text-slate-500">{suggestion.student.email}</p>
+                            <p className="text-xs text-slate-500">Budget: Rs. {suggestion.student.budget}</p>
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-brand-900">{suggestion.tutor.name}</p>
+                            <p className="text-xs text-slate-500">{suggestion.tutor.email}</p>
+                            <p className="text-xs text-slate-500">Fees: Rs. {suggestion.tutor.fees}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm font-semibold text-brand-900">{suggestion.tutor.name}</p>
-                          <p className="text-xs text-slate-500">Tutor</p>
-                          <p className="text-xs text-slate-500">Fees: Rs. {suggestion.tutor.fees}</p>
+                        <div className="grid gap-2 text-xs text-slate-500">
+                          <p>Subjects matched: {suggestion.subjects.join(", ")}</p>
+                          <p>Tutor qualification: {suggestion.tutor.qualification}</p>
                         </div>
-                      </div>
-                      <div className="mt-4 flex items-center justify-between gap-3">
-                        <span className="rounded-full bg-brand-50 px-3 py-2 text-xs font-semibold text-brand-700">
-                          Score {suggestion.score}%
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => sendMatch(suggestion.student._id, suggestion.tutor._id)}
-                          className="rounded-full bg-brand-700 px-4 py-2 text-sm font-semibold text-white"
-                        >
-                          Confirm match
-                        </button>
+                        <div className="mt-4 flex items-center justify-between gap-3">
+                          <span className="rounded-full bg-brand-50 px-3 py-2 text-xs font-semibold text-brand-700">
+                            Score {suggestion.score}%
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => sendMatch(suggestion.student._id, suggestion.tutor._id)}
+                            className="rounded-full bg-brand-700 px-4 py-2 text-sm font-semibold text-white"
+                          >
+                            Confirm match
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))

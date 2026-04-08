@@ -17,15 +17,14 @@ const getMatchSuggestions = async (_req, res) => {
 
   const suggestions = [];
 
-  suggestions.forEach((student) => {
+  students.forEach((student) => {
     tutors.forEach((tutor) => {
       if (tutor.fees <= student.budget) {
-        // Check if subjects overlap
-        const studentSubjects = student.subjects || [];
-        const tutorSubjects = tutor.subjects || [];
-        const hasCommonSubject = studentSubjects.some(sub => tutorSubjects.includes(sub));
-        
-        if (hasCommonSubject) {
+        const studentSubjects = (student.subjects || []).map((subject) => subject.toLowerCase().trim());
+        const tutorSubjects = (tutor.subjects || []).map((subject) => subject.toLowerCase().trim());
+        const commonSubjects = studentSubjects.filter((subject) => tutorSubjects.includes(subject));
+
+        if (commonSubjects.length) {
           const score = Math.round(
             Math.max(0, 100 - Math.abs(student.budget - tutor.fees) / Math.max(student.budget, 1) * 100)
           );
@@ -34,6 +33,7 @@ const getMatchSuggestions = async (_req, res) => {
             student,
             tutor,
             score,
+            subjects: commonSubjects,
           });
         }
       }
