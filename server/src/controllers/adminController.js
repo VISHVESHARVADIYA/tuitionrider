@@ -1,6 +1,62 @@
 const Student = require("../models/Student");
 const Tutor = require("../models/Tutor");
 
+const parseTimeToMinutes = (timeText) => {
+  if (!timeText || typeof timeText !== "string") return null;
+  const normalized = timeText.trim().toUpperCase();
+  const match = normalized.match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/);
+  if (!match) return null;
+
+  const [, hourText, minuteText, meridiem] = match;
+  let hour = Number(hourText);
+  const minute = Number(minuteText);
+
+  if (Number.isNaN(hour) || Number.isNaN(minute) || hour < 1 || hour > 12 || minute < 0 || minute > 59) {
+    return null;
+  }
+
+  if (meridiem === "AM") {
+    if (hour === 12) hour = 0;
+  } else if (hour !== 12) {
+    hour += 12;
+  }
+
+  return hour * 60 + minute;
+};
+
+const parseSlotRange = (slotText) => {
+  if (!slotText || typeof slotText !== "string") return null;
+  const parts = slotText.split("-").map((part) => part.trim());
+  if (parts.length !== 2) return null;
+
+  const start = parseTimeToMinutes(parts[0]);
+  const end = parseTimeToMinutes(parts[1]);
+  if (start === null || end === null || end <= start) return null;
+
+  return { start, end };
+};
+
+const hasSlotOverlap = (slotA, slotB) => {
+  const rangeA = parseSlotRange(slotA);
+  const rangeB = parseSlotRange(slotB);
+
+  if (!rangeA || !rangeB) {
+    return (slotA || "").toLowerCase().trim() === (slotB || "").toLowerCase().trim();
+  }
+
+  return rangeA.start < rangeB.end && rangeB.start < rangeA.end;
+};
+
+const isTutorAvailableForSlot = (tutor, studentSlot, ignoreStudentId) => {
+  const assignedStudents = tutor.matchedStudents || [];
+  return assignedStudents.every((entry) => {
+    if (ignoreStudentId && entry.id === ignoreStudentId) {
+      return true;
+    }
+    return !hasSlotOverlap(entry.timeSlot, studentSlot);
+  });
+};
+
 const getStudents = async (_req, res) => {
   const requests = await Student.find().sort({ createdAt: -1 });
   return res.json({ requests });
@@ -19,29 +75,29 @@ const getMatchSuggestions = async (_req, res) => {
 
   students.forEach((student) => {
     tutors.forEach((tutor) => {
-      if (tutor.fees <= student.budget) {
-        const studentSubjects = (student.subjects || []).map((subject) => subject.toLowerCase().trim());
-        const tutorSubjects = (tutor.subjects || []).map((subject) => subject.toLowerCase().trim());
-        const commonSubjects = studentSubjects.filter((subject) => tutorSubjects.includes(subject));
-        const studentSlot = student.timeSlot?.toLowerCase().trim();
-        const tutorSlot = tutor.timeSlot?.toLowerCase().trim();
+      if (tutor.fees > student.budget) return;
 
-        if (commonSubjects.length && studentSlot && tutorSlot && studentSlot === tutorSlot) {
-          const score = Math.min(
-            100,
-            Math.round(
-              Math.max(0, 100 - Math.abs(student.budget - tutor.fees) / Math.max(student.budget, 1) * 100) + 10
-            )
-          );
+      const studentSubjects = (student.subjects || []).map((subject) => subject.toLowerCase().trim());
+      const tutorSubjects = (tutor.subjects || []).map((subject) => subject.toLowerCase().trim());
+      const commonSubjects = studentSubjects.filter((subject) => tutorSubjects.includes(subject));
 
-          suggestions.push({
-            student,
-            tutor,
-            score,
-            subjects: commonSubjects,
-          });
-        }
-      }
+      if (!commonSubjects.length) return;
+      if (!hasSlotOverlap(student.timeSlot, tutor.timeSlot)) return;
+      if (!isTutorAvailableForSlot(tutor, student.timeSlot, student._id.toString())) return;
+
+      const budgetScore = Math.max(
+        0,
+        100 - (Math.abs(student.budget - tutor.fees) / Math.max(student.budget, 1)) * 100
+      );
+      const subjectScore = Math.min(30, (commonSubjects.length / Math.max(studentSubjects.length, 1)) * 30);
+      const score = Math.min(100, Math.round(budgetScore * 0.6 + subjectScore + 10));
+
+      suggestions.push({
+        student,
+        tutor,
+        score,
+        subjects: commonSubjects,
+      });
     });
   });
 
@@ -62,6 +118,25 @@ const createMatch = async (req, res) => {
 
   if (student.matchStatus === "contracted") {
     return res.status(400).json({ message: "Student request is already matched." });
+  }
+
+  if (tutor.fees > student.budget) {
+    return res.status(400).json({ message: "Tutor fees exceed student budget." });
+  }
+
+  const studentSubjects = (student.subjects || []).map((subject) => subject.toLowerCase().trim());
+  const tutorSubjects = (tutor.subjects || []).map((subject) => subject.toLowerCase().trim());
+  const commonSubjects = studentSubjects.filter((subject) => tutorSubjects.includes(subject));
+  if (!commonSubjects.length) {
+    return res.status(400).json({ message: "No common subjects between student and tutor." });
+  }
+
+  if (!hasSlotOverlap(student.timeSlot, tutor.timeSlot)) {
+    return res.status(400).json({ message: "Student and tutor time slots do not overlap." });
+  }
+
+  if (!isTutorAvailableForSlot(tutor, student.timeSlot, student._id.toString())) {
+    return res.status(400).json({ message: "Tutor already has a contracted student in this time slot." });
   }
 
   student.matchStatus = "contracted";

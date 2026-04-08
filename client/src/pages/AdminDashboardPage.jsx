@@ -333,6 +333,24 @@ function AdminDashboardPage() {
                           <p className="font-semibold">Subjects:</p>
                           <p>{match.student.subjects.join(", ")}</p>
                         </div>
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={() => cancelContract("student", match.student.id)}
+                            className="rounded-lg bg-amber-100 px-3 py-2 text-xs font-semibold text-amber-800 hover:bg-amber-200 transition"
+                          >
+                            Resign Student Contract
+                          </button>
+                          {match.tutor?.id ? (
+                            <button
+                              type="button"
+                              onClick={() => cancelContract("tutor", match.tutor.id)}
+                              className="rounded-lg bg-red-100 px-3 py-2 text-xs font-semibold text-red-800 hover:bg-red-200 transition"
+                            >
+                              Resign Tutor Contracts
+                            </button>
+                          ) : null}
+                        </div>
                       </div>
                     ))
                   ) : (
