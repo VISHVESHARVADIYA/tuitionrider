@@ -1,4 +1,4 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
@@ -7,6 +7,8 @@ import { useAuth } from "../context/AuthContext";
 function Navbar() {
   const [open, setOpen] = useState(false);
   const { isAuthenticated, isAdmin, user, logout } = useAuth();
+  const location = useLocation();
+  const isLandingPage = location.pathname === "/";
 
   const navItems = [
     { label: "Find Tutor", to: "/student-register" },
@@ -19,7 +21,9 @@ function Navbar() {
 
   if (!isAuthenticated) {
     navItems.push({ label: "Login", to: "/auth" });
-    navItems.push({ label: "Admin", to: "/admin/login" });
+    if (!isLandingPage) {
+      navItems.push({ label: "Admin", to: "/admin/login" });
+    }
   }
 
   if (isAdmin) {
