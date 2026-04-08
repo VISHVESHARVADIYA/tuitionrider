@@ -82,7 +82,7 @@ function ProfilePage() {
         dataToSave.subjects = dataToSave.subjects.split(",").map((s) => s.trim());
       }
 
-      const endpoint = editingType === "student" ? `/students/${editingId}` : `/tutors/${editingId}`;
+      const endpoint = editingType === "student" ? `/student/${editingId}` : `/tutor/${editingId}`;
       const response = await api.patch(endpoint, dataToSave);
 
       if (editingType === "student") {
